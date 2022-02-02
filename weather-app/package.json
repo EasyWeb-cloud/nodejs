@@ -1,0 +1,25 @@
+{
+  "name": "weather-app-oleg2001",
+  "version": "1.0.0",
+  "description": "check weater easily",
+  "main": "weather.js",
+  "type": "module",
+  "bin": {
+    "weather": "weather.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "weather"
+  ],
+  "author": "Oleg Myhal",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "chalk": "^5.0.0",
+    "dedent-js": "^1.0.1"
+  }
+}

@@ -3,11 +3,12 @@ const getArgs = (args) => {
   const [executer, file, ...rest] = args;
   rest.forEach((elem) => {
     if (elem[0] === "-") {
-      res[elem.substring(1)] = undefined;
+      res[elem.substring(1)] = true;
     } else {
       const objectKeys = Object.keys(res);
       const lastKey = objectKeys[objectKeys.length - 1];
-      res[lastKey] = res[lastKey] ? [...res[lastKey], elem] : [elem];
+      res[lastKey] =
+        typeof res[lastKey] !== "boolean" ? [...res[lastKey], elem] : [elem];
     }
   });
 

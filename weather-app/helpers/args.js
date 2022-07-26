@@ -1,22 +1,17 @@
-
 const getArgs = (args) => {
-    const res = {}
-    const [executer, file, ...rest] = args
-    rest.forEach((elem, index, arr) => {
-        if(elem[0] === '-'){
-            if(index === arr.length - 1){
-                res[elem.substring(1)] = true
-            }else if(arr[index + 1][0] !== '-'){
-                res[elem.substring(1)] = arr[index + 1]
-            }else {
-                res[elem.substring(1)] = true
-            }
-        }
-    });
+  const res = {};
+  const [executer, file, ...rest] = args;
+  rest.forEach((elem) => {
+    if (elem[0] === "-") {
+      res[elem.substring(1)] = undefined;
+    } else {
+      const objectKeys = Object.keys(res);
+      const lastKey = objectKeys[objectKeys.length - 1];
+      res[lastKey] = res[lastKey] ? [...res[lastKey], elem] : [elem];
+    }
+  });
 
-    return res
-}
+  return res;
+};
 
-export {
-    getArgs
-}
+export { getArgs };

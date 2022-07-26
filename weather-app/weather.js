@@ -12,47 +12,60 @@ import {
   getKeyValue,
 } from "./services/storage.service.js";
 import { getWeather, getIcon } from "./services/api.service.js";
+import ln from "./localize.js";
 
 const saveToken = async (token) => {
+  const currentLanguage = process.env.LANGUAGE;
+  const language = ln[currentLanguage];
+
   if (!token.length) {
-    printError("Токен не передан");
+    printError(language["token_not_saved"]);
     return;
   }
   try {
     await saveKeyValue(TOKEN_DICTIONARY.token, token);
-    printSuccess("Токен успешно сохранен");
+    printSuccess(ln["token_saved"]);
   } catch (e) {
     printError(e.message);
   }
 };
 
 const saveCity = async (city) => {
+  const currentLanguage = process.env.LANGUAGE;
+  const language = ln[currentLanguage];
+
   if (!city.length) {
-    printError("Город не передан");
+    printError(language["city_not_saved"]);
     return;
   }
   try {
     await saveKeyValue(TOKEN_DICTIONARY.city, city);
-    printSuccess("Город успешно сохранен");
+    printSuccess(language["city_saved"]);
   } catch (e) {
     printError(e.message);
   }
 };
 
 const saveLanguage = async (lng) => {
-  if (!innerHeight.length) {
-    printError("Не передан язык");
+  const currentLanguage = process.env.LANGUAGE;
+  const language = ln[currentLanguage];
+
+  if (!lng) {
+    printError(language["no_language"]);
     return;
   }
   try {
     await saveKeyValue(TOKEN_DICTIONARY.language, lng);
-    printSuccess("Язык не передан");
+    printSuccess(ln[lng]["language_saved"]);
   } catch (e) {
     printError(e.message);
   }
 };
 
 const getForecast = async () => {
+  const currentLanguage = process.env.LANGUAGE;
+  const language = ln[currentLanguage];
+
   try {
     const city = process.env.CITY ?? (await getKeyValue(TOKEN_DICTIONARY.city));
     const weathers = await getWeather(city);
@@ -61,9 +74,9 @@ const getForecast = async () => {
     });
   } catch (e) {
     if (e?.response?.status === 404) {
-      printError("Неверно указан город");
+      printError(language["city_validation"]);
     } else if (e?.response?.status === 401) {
-      printError("Неверно указан токен");
+      printError(language["token_invalid"]);
     } else {
       printError(e.message);
     }
@@ -71,18 +84,19 @@ const getForecast = async () => {
 };
 
 const setDefaultLanguage = async () => {
-  if (await getKeyValue(TOKEN_DICTIONARY.language)) {
-    return (process.env.LANGUAGE = TOKEN_DICTIONARY.language);
+  const settedLang = await getKeyValue(TOKEN_DICTIONARY.language);
+  if (settedLang) {
+    return (process.env.LANGUAGE = settedLang);
   }
 
   await saveKeyValue(TOKEN_DICTIONARY.language, "eng");
   return (process.env.LANGUAGE = "eng");
 };
 
-const initCLI = () => {
+const initCLI = async () => {
   const args = getArgs(process.argv);
-  setDefaultLanguage();
-  console.log(args);
+  await setDefaultLanguage();
+
   if (args.h) {
     return printHelp();
   }

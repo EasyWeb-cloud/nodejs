@@ -1,5 +1,8 @@
 import { getKeyValue, TOKEN_DICTIONARY } from "./storage.service.js";
 import axios from "axios";
+import localize from "../localize.js";
+
+const ln = localize[process.env.LANGUAGE];
 
 const getIcon = (icon) => {
   switch (icon.slice(0, -1)) {
@@ -24,14 +27,14 @@ const getIcon = (icon) => {
   }
 };
 
-const weatherRequest = async (city, token) => {
+const weatherRequest = async (city, token, lang) => {
   const { data } = await axios.get(
     "https://api.openweathermap.org/data/2.5/weather",
     {
       params: {
         q: city,
         appid: token,
-        lang: "eng",
+        lang,
         units: "metric",
       },
     }
@@ -43,15 +46,17 @@ const weatherRequest = async (city, token) => {
 const getWeather = async (city) => {
   const token =
     process.env.TOKEN ?? (await getKeyValue(TOKEN_DICTIONARY.token));
+  const lang =
+    process.env.LNG ?? (await getKeyValue(TOKEN_DICTIONARY.language));
   if (!token) {
     throw new Error("Не задан ключ API");
   }
   const data = [];
-  await Promise.allSettled(city.map((el) => weatherRequest(el, token))).then(
-    (res) => {
-      res.forEach((a) => data.push(a.value));
-    }
-  );
+  await Promise.allSettled(
+    city.map((el) => weatherRequest(el, token, lang))
+  ).then((res) => {
+    res.forEach((a) => data.push(a.value));
+  });
   return data;
 };
 
